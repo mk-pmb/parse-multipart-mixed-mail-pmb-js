@@ -1,5 +1,5 @@
 { "name": "parse-multipart-mixed-mail-pmb",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Split a 'Content-Type: multipart/mixed' email into parsed headers and body parts.",
   "keywords": [
     "attachment",
@@ -29,6 +29,8 @@
   "directories": { "test": "test" },
 
   "dependencies": {
+    "parse-mail-attachment-pmb": "^0.1.2",
+    "typechecks-pmb": "^0.200620.3"
   },
   "devDependencies": {
   },
