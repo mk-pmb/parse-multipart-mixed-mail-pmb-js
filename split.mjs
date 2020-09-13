@@ -6,7 +6,7 @@ import mustBe from 'typechecks-pmb/must-be';
 
 const EX = function parseMail(raw) {
   const mail = mAtt.splitParseHeaders(raw);
-  mustBe('eeq:"multipart/mixed"', 'MIME type')(mail.cType);
+  mustBe([['oneOf', EX.supportedMimeTypes]], 'MIME type')(mail.cType);
   const boundary = mustBe.nest('MIME boundary in mail headers',
     mail.ctDetails.boundary);
   if (!mail.body.startsWith('--' + boundary + '\n')) {
@@ -18,6 +18,13 @@ const EX = function parseMail(raw) {
 
 
 Object.assign(EX, {
+
+  supportedMimeTypes: [
+    'multipart/alternative',
+    'multipart/mixed',
+    'multipart/related',
+  ],
+
   splitBody(raw) {
     const body = mAtt.normText(raw);
     const boundary = mustBe.nest('MIME boundary in first line of body',
