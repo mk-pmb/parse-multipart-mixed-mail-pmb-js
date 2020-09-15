@@ -9,10 +9,12 @@ const EX = function parseMail(raw) {
   mustBe([['oneOf', EX.supportedMimeTypes]], 'MIME type')(mail.cType);
   const boundary = mustBe.nest('MIME boundary in mail headers',
     mail.ctDetails.boundary);
-  if (!mail.body.startsWith('--' + boundary + '\n')) {
+  let { body } = mail;
+  body = body.replace(/^This is a multi-part message in MIME format\.\s*/i, '');
+  if (!body.startsWith('--' + boundary + '\n')) {
     throw new Error('The body must start with the MIME boundary.');
   }
-  mail.body = EX.splitBody(mail.body);
+  mail.body = EX.splitBody(body);
   return mail;
 };
 
