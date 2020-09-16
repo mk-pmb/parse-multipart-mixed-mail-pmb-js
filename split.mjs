@@ -2,6 +2,7 @@
 
 import mAtt from 'parse-mail-attachment-pmb';
 import mustBe from 'typechecks-pmb/must-be';
+import splitOnce from 'split-string-or-buffer-once-pmb';
 
 
 const EX = function parseMail(raw) {
@@ -28,10 +29,23 @@ Object.assign(EX, {
   ],
 
   splitBody(raw) {
-    const body = mAtt.normText(raw);
-    const boundary = mustBe.nest('MIME boundary in first line of body',
-      (/^\-{2}\S+\n/.exec(body) || false)[0]);
-    return body.slice(boundary.length).split('\n' + boundary);
+    let body = mAtt.normText(raw);
+    let boundary = mustBe.nest('MIME boundary in first line of body',
+      (/^\-{2}(\S{1,160})\n/.exec(body) || false)[1]);
+    const preBound = '\n--';
+    let part = body.slice(-32 - preBound.length - boundary.length);
+    part = splitOnce({ sep: preBound, last: true }, part)[1];
+    if ((part || '').trimRight() !== (boundary + '--')) {
+      throw new Error('Missing end mark. Incomplete download?');
+    }
+    body = body.slice(boundary.length + 3, -preBound.length - part.length);
+    boundary = preBound + boundary + '\n';
+    const parts = [];
+    while (body) {
+      [part, body] = (splitOnce(boundary, body) || [body]);
+      parts.push(Buffer.from(part, 'latin1'));
+    }
+    return parts;
   },
 });
 

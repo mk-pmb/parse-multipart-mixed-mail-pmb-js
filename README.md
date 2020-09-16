@@ -18,6 +18,7 @@ This module exports one function, which carries another function:
 
 ### parseMail(raw)
 
+`raw` should be a Buffer or "binary" (latin-1) String.
 Its API is the same as `splitParseHeaders()` from
 [parse-mail-attachment-pmb][matt],
 except that `body` will be an array of raw body parts as produced by
@@ -28,9 +29,10 @@ Use `splitParseHeaders()` or `parseAttachment()` to process them further.
 
 ### .splitBody(raw)
 
-Split just the body parts, and return them.
+`raw` should be a Buffer or "binary" (latin-1) String.
+Split just the body parts, and return them, as an array of Buffers.
 Assumes the first line of `raw` is a boundary.
-Whitespace at the end of (some) body parts may have been stripped.
+
 
 
 
