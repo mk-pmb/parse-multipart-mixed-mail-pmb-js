@@ -5,8 +5,19 @@ import mustBe from 'typechecks-pmb/must-be';
 import splitOnce from 'split-string-or-buffer-once-pmb';
 
 
-const EX = function parseMail(raw) {
+function rebufferize(x) {
+  return Buffer.from(x, 'latin1');
+  // … to remind users that we do not know the charset.
+}
+
+
+const EX = function parseMail(raw, opt) {
+  if (!opt) { return parseMail(raw, true); }
   const mail = mAtt.splitParseHeaders(raw);
+  if (opt.acceptJustText && (mail.cType || '').startsWith('text/')) {
+    mail.body = [rebufferize(raw)];
+    return mail;
+  }
   mustBe([['oneOf', EX.supportedMimeTypes]], 'MIME type')(mail.cType);
   const boundary = mustBe.nest('MIME boundary in mail headers',
     mail.ctDetails.boundary);
@@ -43,7 +54,7 @@ Object.assign(EX, {
     const parts = [];
     while (body) {
       [part, body] = (splitOnce(boundary, body) || [body]);
-      parts.push(Buffer.from(part, 'latin1'));
+      parts.push(rebufferize(part));
     }
     return parts;
   },

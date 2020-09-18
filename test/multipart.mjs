@@ -44,8 +44,29 @@ test('Split mail parts correctly', async(t) => {
   ].join('\r\n'));
   const mail = muMix(raw);
 
-  t.same(mail.body.length, 2);
-  t.same(binstr(mail.body[0]), arr2lat(helloAtt));
-  t.same(binstr(mail.body[1]), arr2lat(fooBarAtt));
+  t.equal(mail.body.length, 2);
+  t.equal(binstr(mail.body[0]), arr2lat(helloAtt));
+  t.equal(binstr(mail.body[1]), arr2lat(fooBarAtt));
+  t.end();
+});
+
+
+test('Expect multipart unless acceptJustText', async(t) => {
+  t.plan(3);
+  const raw = utf8buf([
+    'From: Someone <mail@example.net>',
+    'To: no reply <no-reply@example.net>',
+    'Content-Type: text/plain; charset=UTF-8',
+    'Content-Transfer-Encoding: 8bit',
+    '',
+    'Hello',
+    'Übär',
+  ].join('\r\n'));
+  t.throws(() => muMix(raw),
+    /\bMIME type must be oneOf\(object "multipart\//);
+
+  const mail = muMix(raw, { acceptJustText: true });
+  t.equal(mail.body.length, 1);
+  t.equal(binstr(mail.body[0]), binstr(raw));
   t.end();
 });

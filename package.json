@@ -1,5 +1,5 @@
 { "name": "parse-multipart-mixed-mail-pmb",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "Split a 'Content-Type: multipart/mixed' email into parsed headers and body parts.",
   "keywords": [
     "attachment",

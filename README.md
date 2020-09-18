@@ -16,7 +16,7 @@ API
 
 This module exports one function, which carries another function:
 
-### parseMail(raw)
+### parseMail(raw[, opt])
 
 `raw` should be a Buffer or "binary" (latin-1) String.
 Its API is the same as `splitParseHeaders()` from
@@ -24,6 +24,14 @@ Its API is the same as `splitParseHeaders()` from
 except that `body` will be an array of raw body parts as produced by
 `.splitBody()`.
 Use `splitParseHeaders()` or `parseAttachment()` to process them further.
+
+`opts` is an optional options object that supports these keys:
+
+* `acceptJustText` (default: `false`):
+  If truthy, and the Content-Type starts with `text/`,
+  rather than lamenting that it's not a multipart mail,
+  consider the entire mail as its first (and only) body part.
+
 
 
 
